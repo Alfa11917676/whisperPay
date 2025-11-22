@@ -41,6 +41,10 @@ export const PrivacyFlow = () => {
 							key={index}
 							className="flex items-center gap-4 flex-1"
 						>
+							{index === 1 && (
+								<ArrowRight className="w-6 h-6 text-muted-foreground shrink-0" />
+							)}
+
 							<motion.div
 								initial={{ opacity: 0, scale: 0.8 }}
 								animate={{ opacity: 1, scale: 1 }}
@@ -62,7 +66,7 @@ export const PrivacyFlow = () => {
 								</div>
 							</motion.div>
 
-							{index < steps.length - 1 && (
+							{index === 1 && (
 								<ArrowRight className="w-6 h-6 text-muted-foreground shrink-0" />
 							)}
 						</div>

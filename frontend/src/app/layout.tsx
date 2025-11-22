@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import "./globals.css";
 import WalletProvider from "@/components/WalletProvider";
 import { Inter, Space_Grotesk } from "next/font/google";
+import StateProvider from "@/state/StateProvider";
 
 const inter = Inter({
 	subsets: ["latin"],
@@ -29,7 +30,9 @@ export default function RootLayout({
 			<body
 				className={`antialiased ${inter.variable} ${spaceGrotesk.variable}`}
 			>
-				<WalletProvider>{children}</WalletProvider>
+				<WalletProvider>
+					<StateProvider>{children} </StateProvider>
+				</WalletProvider>
 			</body>
 		</html>
 	);

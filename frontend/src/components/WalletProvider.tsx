@@ -2,7 +2,7 @@
 
 import { createAppKit } from "@reown/appkit/react";
 import { Ethers5Adapter } from "@reown/appkit-adapter-ethers5";
-import { arbitrum } from "@reown/appkit/networks";
+import { arbitrumSepolia, arbitrum } from "@reown/appkit/networks";
 
 // 1. Get projectId at https://cloud.reown.com
 const projectId = "ee1621642d6d8c3b5fc509b2316773f2";
@@ -20,7 +20,7 @@ const metadata = {
 createAppKit({
 	adapters: [new Ethers5Adapter()],
 	metadata,
-	networks: [arbitrum],
+	networks: [arbitrumSepolia],
 	projectId,
 	features: {
 		analytics: true,
@@ -39,7 +39,7 @@ createAppKit({
 	},
 });
 
-export const APP_CHAIN_ID = arbitrum.id;
+export const APP_CHAIN_ID = arbitrumSepolia.id;
 
 export default function WalletProvider({
 	children,
