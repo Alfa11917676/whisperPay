@@ -40,6 +40,14 @@ module.exports = {
                 mnemonic: "gown village inner smoke child coach mutual ancient wide warrior document antique",
             },
         },
+        arbitrum_testnet: {
+            live: true,
+            saveDeployments: true,
+            tags: ["staging"],
+            url: "https://arb-sepolia.g.alchemy.com/v2/KaLqzUGXxlel0D2-A8nnDDSvzwRfjrIJ",
+            chainId: 421614,
+            accounts: [process.env.PRIVATE_KEY || ""],
+        },
         holesky: {
             live: true,
             saveDeployments: true,
@@ -62,14 +70,6 @@ module.exports = {
             tags: ["staging"],
             url: "https://rpc.minato.soneium.org/",
             chainId: 1946,
-            accounts: [process.env.PRIVATE_KEY || ""],
-        },
-        arbitrum: {
-            live: true,
-            saveDeployments: true,
-            tags: ["staging"],
-            url: "https://arb-sepolia.g.alchemy.com/v2/My_CRCTk9LWEvEyXfPzKLFwLgInbpvwz",
-            chainId: 421614,
             accounts: [process.env.PRIVATE_KEY || ""],
         },
         soneium: {

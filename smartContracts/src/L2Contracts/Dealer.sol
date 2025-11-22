@@ -7,25 +7,27 @@ import { SafeERC20, IERC20 } from "@openzeppelin/contracts/token/ERC20/utils/Saf
 import { Ownable2StepUpgradeable as Ownable } from "@openzeppelin/contracts-upgradeable/access/Ownable2StepUpgradeable.sol";
 import "./interface/IDealer.sol";
 
-contract Dealer is UUPSUpgradeable, ReentrancyGuard, Ownable, IDealer {
+
+contract Dealer is UUPSUpgradeable, Ownable, ReentrancyGuard, IDealer {
 
     using SafeERC20 for IERC20;
 
-    mapping (address => bytes32) private jobDetails;
-    mapping (bytes32 => bool) private jobStatus;
+    address public mediator;
+    mapping (address => Job) private jobDetails;
 
     uint256 private nonce;
     IERC20 public stableCoin;
 
     //---------------------------------  Initializer  ----------------------------------------//
     /// @notice Initializes the contract.
-    function initialize() external initializer onlyProxy {
+    function initialize(address _mediator) external initializer onlyProxy {
 
         __UUPSUpgradeable_init();
         __Ownable2Step_init();
         __Ownable_init(msg.sender);
         __ReentrancyGuard_init();
 
+        mediator = _mediator;
         nonce++;
     }
 
@@ -34,7 +36,7 @@ contract Dealer is UUPSUpgradeable, ReentrancyGuard, Ownable, IDealer {
     /// @param _privateChainId The private chain id spined for this user
     /// @param _totalAmount The total amount of funds to be transferred
     function depositAndExec(
-        bytes calldata _backendDigest,
+        string calldata _backendDigest,
         uint256 _privateChainId,
         uint256 _totalAmount
     ) external nonReentrant {
@@ -44,16 +46,38 @@ contract Dealer is UUPSUpgradeable, ReentrancyGuard, Ownable, IDealer {
         if (_totalAmount == 0)
             revert InvalidInteraction("Invalid Input Amount");
 
+
+        bool previousJobStatus = jobDetails[msg.sender].status;
+        if (previousJobStatus == false)
+            revert InvalidInteraction("Previous Job Not finished");
+
         bytes32 jobDigest = keccak256(abi.encodePacked(_backendDigest, _privateChainId, _totalAmount, block.timestamp, nonce));
-        jobDetails[msg.sender] = jobDigest;
-        jobStatus[jobDigest] = false;
+        jobDetails[msg.sender] = Job({
+            status: false,
+            digest: jobDigest,
+            value: _totalAmount
+        });
         nonce++;
         stableCoin.safeTransfer(address(this), _totalAmount);
 
         emit L3Interaction(_backendDigest ,jobDigest, _privateChainId);
     }
 
+    function transferToWhisperRouter(address _jobCreator) external onlyOwner {
 
+        Job memory job = jobDetails[_jobCreator];
+        if (job.status == true)
+            revert InvalidInteraction("No latest interaction required");
+        stableCoin.safeTransfer(mediator, job.value);
+
+        emit FundsTransferredToMediator(job.value);
+    }
+
+    //-------------------------------- VIEW FUNCTIONS ------------------------------------------------//
+
+    function getJobDetails(address _creator) external view returns(Job memory) {
+        return jobDetails[_creator];
+    }
 
     //---------------------------------  Internal Functions  ----------------------------------------//
     /// @notice Authorizes the upgrade to a new implementation contract.
