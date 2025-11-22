@@ -41,8 +41,15 @@ const Index = () => {
 			</main>
 
 			{/* Footer */}
-			<footer className="container mx-auto px-4 py-8 text-center text-sm text-muted-foreground border-t border-border/50">
-				<p>Built for privacy. Powered by L2/L3 architecture.</p>
+			<footer className="container mx-auto px-4 py-8 flex flex-col gap-10 text-center text-sm text-muted-foreground border-t border-border/50">
+				<div className="flex items-center justify-between">
+					<p>Built for privacy. Powered by L2/L3 architecture.</p>
+					<p className="mt-2">Made with ❤️ by De0xys</p>
+				</div>
+				<p className="mt-2">
+					© {new Date().getFullYear()} WhisperPay. All rights
+					reserved.
+				</p>
 			</footer>
 		</main>
 	);

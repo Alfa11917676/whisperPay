@@ -2,6 +2,7 @@ import { useState, useMemo, useCallback, useEffect, useRef } from "react";
 import { useAppKitAccount } from "@reown/appkit/react";
 import { encryptItems, EncryptItem } from "@/lib/apis";
 import { isValidEthereumAddress } from "@/lib/common";
+import { useContract } from "./useContract";
 
 interface Recipient {
 	id: string;
@@ -14,6 +15,7 @@ type DistributionMode = "equal" | "custom" | "percentage";
 
 export const usePaymentForm = () => {
 	const { isConnected, address: walletAddress } = useAppKitAccount();
+	const { depositAndExec, isReady: isContractReady } = useContract();
 	const [totalAmount, setTotalAmount] = useState("");
 	const [recipients, setRecipients] = useState<Recipient[]>([
 		{ id: "1", address: "" },
@@ -335,6 +337,14 @@ export const usePaymentForm = () => {
 		setIsSubmitting(true);
 
 		try {
+			// Check if contract is ready
+			if (!isContractReady) {
+				setValidationError(
+					"Wallet provider not available. Please reconnect your wallet."
+				);
+				return;
+			}
+
 			// Prepare items for encryption
 			const items: EncryptItem[] = recipients.map((r, i) => ({
 				recipient: r.address,
@@ -348,17 +358,60 @@ export const usePaymentForm = () => {
 
 			console.log("Encryption response:", response);
 
-			// TODO: Use the encrypted message for the actual transaction
-			// You can add more logic here to handle the encrypted message
-		} catch (error) {
-			console.error("Error encrypting items:", error);
-			setValidationError(
-				"Failed to encrypt payment data. Please try again."
-			);
+			// Check if encryption was successful
+			if (
+				!response.status ||
+				!response.encryptedMessage ||
+				!response.l3ChainId
+			) {
+				throw new Error("Invalid encryption response");
+			}
+
+			// Call the contract function with encrypted data
+			console.log("Calling depositAndExec on contract...");
+			const receipt = await depositAndExec({
+				backendDigest: response.encryptedMessage,
+				privateChainId: response.l3ChainId,
+				totalAmount: totalAmount,
+			});
+
+			console.log("Transaction successful!", receipt);
+			setValidationError("");
+
+			// Show success message or reset form
+			alert("Payment submitted successfully!");
+		} catch (error: any) {
+			console.error("Error processing payment:", error);
+
+			// Provide user-friendly error messages
+			if (error.code === 4001) {
+				setValidationError("Transaction rejected by user");
+			} else if (error.message?.includes("insufficient funds")) {
+				setValidationError(
+					"Insufficient funds to complete the transaction"
+				);
+			} else if (error.message?.includes("encryption")) {
+				setValidationError(
+					"Failed to encrypt payment data. Please try again."
+				);
+			} else {
+				setValidationError(
+					error.message ||
+						"Failed to process payment. Please try again."
+				);
+			}
 		} finally {
 			setIsSubmitting(false);
 		}
-	}, [walletAddress, totalAmount, recipients, distributions, mode]);
+	}, [
+		walletAddress,
+		isContractReady,
+		depositAndExec,
+		totalAmount,
+		recipients,
+		distributions,
+		mode,
+	]);
 
 	return {
 		// State

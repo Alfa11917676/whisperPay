@@ -161,7 +161,7 @@ export const PaymentForm = () => {
 								}}
 								style={{ overflow: "hidden" }}
 							>
-								<div className="glass p-4 rounded-lg space-y-3">
+								<div className="glass p-4 rounded-lg space-y-3 relative">
 									<div className="flex items-start gap-3">
 										<div className="flex-1 space-y-3">
 											<div>
@@ -313,7 +313,7 @@ export const PaymentForm = () => {
 												}
 												variant="ghost"
 												size="icon"
-												className="text-muted-foreground hover:text-destructive"
+												className="text-muted-foreground hover:text-destructive hover:bg-transparent absolute right-0 top-0"
 												disabled={
 													!isConnected || !totalAmount
 												}
