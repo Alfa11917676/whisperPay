@@ -2,7 +2,7 @@
 
 import { createAppKit } from "@reown/appkit/react";
 import { Ethers5Adapter } from "@reown/appkit-adapter-ethers5";
-import { arbitrumSepolia, arbitrum } from "@reown/appkit/networks";
+import { arbitrumSepolia } from "@reown/appkit/networks";
 
 // 1. Get projectId at https://cloud.reown.com
 const projectId = "ee1621642d6d8c3b5fc509b2316773f2";
