@@ -1,3 +1,5 @@
+"use client";
+
 import { checkStatus, createChain } from "@/lib/apis";
 import { useAppKitAccount } from "@reown/appkit/react";
 import { useEffect } from "react";

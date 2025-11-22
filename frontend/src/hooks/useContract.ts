@@ -1,3 +1,5 @@
+"use client";
+
 import { useMemo } from "react";
 import { useAppKitProvider } from "@reown/appkit/react";
 import { ethers } from "ethers";

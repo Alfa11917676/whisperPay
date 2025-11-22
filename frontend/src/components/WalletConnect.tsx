@@ -1,3 +1,5 @@
+"use client";
+
 import { motion } from "framer-motion";
 import { useAppKit, useAppKitAccount } from "@reown/appkit/react";
 import { truncateAddress } from "@/lib/common";

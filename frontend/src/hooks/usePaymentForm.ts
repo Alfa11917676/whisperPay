@@ -1,3 +1,5 @@
+"use client";
+
 import { useState, useMemo, useCallback, useEffect, useRef } from "react";
 import { useAppKitAccount } from "@reown/appkit/react";
 import { encryptItems, EncryptItem } from "@/lib/apis";
