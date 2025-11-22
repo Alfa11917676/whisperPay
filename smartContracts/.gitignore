@@ -2,7 +2,7 @@
 cache/
 out/
 lib
-
+.idea
 # Ignores development broadcast logs
 !/broadcast
 /broadcast/*/31337/
