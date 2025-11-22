@@ -1,0 +1,31 @@
+{
+  "_format": "hh-sol-artifact-1",
+  "contractName": "BurnerWallet",
+  "sourceName": "src/L3Contracts/BurnerWallet.sol",
+  "abi": [
+    {
+      "inputs": [],
+      "name": "executeBurnerTransaction",
+      "outputs": [],
+      "stateMutability": "nonpayable",
+      "type": "function"
+    },
+    {
+      "inputs": [],
+      "name": "walletOwner",
+      "outputs": [
+        {
+          "internalType": "address",
+          "name": "",
+          "type": "address"
+        }
+      ],
+      "stateMutability": "view",
+      "type": "function"
+    }
+  ],
+  "bytecode": "0x6080806040523460145760a4908161001a8239f35b600080fdfe6080806040526004361015601257600080fd5b600090813560e01c9081631ae879e81460485750639a7c292414603457600080fd5b346045578060031936011260455780f35b80fd5b905034606a5781600319360112606a5790546001600160a01b03168152602090f35b5080fdfea26469706673582212209c8953ed6e22fb84eabb27fdb99f331ea6eb2ebcf5baf0b71c7ddafbf643780f64736f6c63430008180033",
+  "deployedBytecode": "0x6080806040526004361015601257600080fd5b600090813560e01c9081631ae879e81460485750639a7c292414603457600080fd5b346045578060031936011260455780f35b80fd5b905034606a5781600319360112606a5790546001600160a01b03168152602090f35b5080fdfea26469706673582212209c8953ed6e22fb84eabb27fdb99f331ea6eb2ebcf5baf0b71c7ddafbf643780f64736f6c63430008180033",
+  "linkReferences": {},
+  "deployedLinkReferences": {}
+}

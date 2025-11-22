@@ -9,10 +9,19 @@ async function deployment() {
     const [admin] = await ethers.getSigners()
     console.log("admin & networkName", admin.address, network.name)
 
+
+    const Token = await ethers.getContractFactory("DummyToken")
+    let token = await Token.deploy()
+    await token.waitForDeployment();
+    debug("Dummy token deployed", token.target)
+
     const Dealer = await ethers.getContractFactory("Dealer")
     let dealer = await upgrades.deployProxy(
         Dealer,
-        [admin.address]
+        [
+            admin.address,
+            token.target
+        ]
     );
     await dealer.waitForDeployment();
     debug("Deployment successfully deployed", dealer.target)

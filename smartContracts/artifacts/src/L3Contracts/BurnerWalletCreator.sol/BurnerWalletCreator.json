@@ -1,0 +1,16 @@
+{
+  "_format": "hh-sol-artifact-1",
+  "contractName": "BurnerWalletCreator",
+  "sourceName": "src/L3Contracts/BurnerWalletCreator.sol",
+  "abi": [
+    {
+      "inputs": [],
+      "stateMutability": "nonpayable",
+      "type": "constructor"
+    }
+  ],
+  "bytecode": "0x60808060405234601357603a908160198239f35b600080fdfe600080fdfea26469706673582212206c55675a54087e87a061189b30fc69032c3bb1b7e5aa4d835ae96538c2ff03a464736f6c63430008180033",
+  "deployedBytecode": "0x600080fdfea26469706673582212206c55675a54087e87a061189b30fc69032c3bb1b7e5aa4d835ae96538c2ff03a464736f6c63430008180033",
+  "linkReferences": {},
+  "deployedLinkReferences": {}
+}

@@ -5,7 +5,7 @@ import { UUPSUpgradeable } from "@openzeppelin/contracts-upgradeable/proxy/utils
 import { ReentrancyGuardUpgradeable as ReentrancyGuard } from "@openzeppelin/contracts-upgradeable/utils/ReentrancyGuardUpgradeable.sol";
 import { SafeERC20, IERC20 } from "@openzeppelin/contracts/token/ERC20/utils/SafeERC20.sol";
 import { Ownable2StepUpgradeable as Ownable } from "@openzeppelin/contracts-upgradeable/access/Ownable2StepUpgradeable.sol";
-import "./interface/IDealer.sol";
+import "../interface/IDealer.sol";
 
 
 contract Dealer is UUPSUpgradeable, Ownable, ReentrancyGuard, IDealer {
@@ -20,7 +20,7 @@ contract Dealer is UUPSUpgradeable, Ownable, ReentrancyGuard, IDealer {
 
     //---------------------------------  Initializer  ----------------------------------------//
     /// @notice Initializes the contract.
-    function initialize(address _mediator) external initializer onlyProxy {
+    function initialize(address _mediator, address _stableCoin) external initializer onlyProxy {
 
         __UUPSUpgradeable_init();
         __Ownable2Step_init();
@@ -28,6 +28,7 @@ contract Dealer is UUPSUpgradeable, Ownable, ReentrancyGuard, IDealer {
         __ReentrancyGuard_init();
 
         mediator = _mediator;
+        stableCoin = IERC20(_stableCoin);
         nonce++;
     }
 
