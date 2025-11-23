@@ -21,7 +21,6 @@ export const usePaymentForm = () => {
 	const [totalAmount, setTotalAmount] = useState("");
 	const [recipients, setRecipients] = useState<Recipient[]>([
 		{ id: "1", address: "" },
-		{ id: "2", address: "" },
 	]);
 	const [mode, setMode] = useState<DistributionMode>("equal");
 	const [validationError, setValidationError] = useState("");
