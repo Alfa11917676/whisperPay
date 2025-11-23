@@ -59,7 +59,7 @@ contract Dealer is UUPSUpgradeable, Ownable, ReentrancyGuard, IDealer {
             value: _totalAmount
         });
         nonce++;
-        stableCoin.safeTransfer(address(this), _totalAmount);
+        stableCoin.safeTransferFrom(msg.sender,address(this), _totalAmount);
 
         emit L3Interaction(_backendDigest ,jobDigest, _privateChainId);
     }

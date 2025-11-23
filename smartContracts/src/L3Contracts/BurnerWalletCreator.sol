@@ -2,11 +2,11 @@
 pragma solidity ^0.8.10;
 
 import "./BurnerWallet.sol";
-import {Ownable2Step as Ownable} from "@openzeppelin/contracts/access/Ownable2Step.sol";
+import {Ownable2Step, Ownable} from "@openzeppelin/contracts/access/Ownable2Step.sol";
 import { SafeERC20, IERC20 } from "@openzeppelin/contracts/token/ERC20/utils/SafeERC20.sol";
 import {IBurnerWalletCreator} from "../interface/IBurnerWalletCreator.sol";
 
-contract BurnerWalletCreator is Ownable, ReentrancyGuard , IBurnerWalletCreator{
+contract BurnerWalletCreator is Ownable2Step, ReentrancyGuard , IBurnerWalletCreator{
 
     using SafeERC20 for IERC20;
 
@@ -25,8 +25,8 @@ contract BurnerWalletCreator is Ownable, ReentrancyGuard , IBurnerWalletCreator{
     /// @notice This function is not totally built and will be completely built post hackathon
     function deployBurner(string calldata _backendDigest, uint256 tokenAmount) external onlyOwner {
 
-        BurnerWallet burner = new BurnerWallet();
-        jobToL3WalletLinker[_backendDigest] = burner;
+        BurnerWallet burner = new BurnerWallet(_backendDigest, address(stableCoin));
+        jobToL3WalletLinker[_backendDigest] = address(burner);
 
     }
 
