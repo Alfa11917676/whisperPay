@@ -21,7 +21,7 @@ interface IDealer {
         string calldata _backendDigest,
         uint256 _privateChainId,
         uint256 _totalAmount
-    ) external;
+    ) external payable;
 
 
 }

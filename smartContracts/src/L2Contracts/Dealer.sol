@@ -40,13 +40,14 @@ contract Dealer is UUPSUpgradeable, Ownable, ReentrancyGuard, IDealer {
         string calldata _backendDigest,
         uint256 _privateChainId,
         uint256 _totalAmount
-    ) external nonReentrant {
+    ) external payable nonReentrant {
 
         if (_privateChainId == 0)
             revert InvalidChainId("Invalid ChainId");
         if (_totalAmount == 0)
             revert InvalidInteraction("Invalid Input Amount");
-
+        if (msg.value != _totalAmount)
+            revert InvalidInteraction("Funds mismatch");
 
         bool previousJobStatus = jobDetails[msg.sender].status;
         if (previousJobStatus == false)
@@ -59,7 +60,6 @@ contract Dealer is UUPSUpgradeable, Ownable, ReentrancyGuard, IDealer {
             value: _totalAmount
         });
         nonce++;
-        stableCoin.safeTransferFrom(msg.sender,address(this), _totalAmount);
 
         emit L3Interaction(_backendDigest ,jobDigest, _privateChainId);
     }
@@ -69,7 +69,8 @@ contract Dealer is UUPSUpgradeable, Ownable, ReentrancyGuard, IDealer {
         Job memory job = jobDetails[_jobCreator];
         if (job.status == true)
             revert InvalidInteraction("No latest interaction required");
-        stableCoin.safeTransfer(mediator, job.value);
+//        stableCoin.safeTransfer(mediator, job.value);
+        payable(mediator).transfer(job.value);
 
         emit FundsTransferredToMediator(job.value);
     }
