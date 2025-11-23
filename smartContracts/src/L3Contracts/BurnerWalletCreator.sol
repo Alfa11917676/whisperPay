@@ -15,24 +15,21 @@ contract BurnerWalletCreator is Ownable2Step, ReentrancyGuard , IBurnerWalletCre
     mapping (string => address) private jobToL3WalletLinker;
 
     uint256 private nonce;
-    IERC20 public stableCoin;
 
-   constructor (address _stableCoin) Ownable(msg.sender) {
-     mediator  = msg.sender;
-       stableCoin = IERC20(_stableCoin);
-   }
+    constructor () Ownable(msg.sender) {
+        mediator  = msg.sender;
+    }
 
     /// @notice This function is not totally built and will be completely built post hackathon
     function deployBurner(string calldata _backendDigest, uint256 tokenAmount) external onlyOwner {
 
-        BurnerWallet burner = new BurnerWallet(_backendDigest, address(stableCoin));
+        BurnerWallet burner = new BurnerWallet(_backendDigest);
         jobToL3WalletLinker[_backendDigest] = address(burner);
 
     }
 
     function transferFundsToMediator(string memory _data, uint256 _amount) external onlyOwner{
-
-        stableCoin.safeTransfer(mediator, _amount);
+        payable(mediator).transfer(_amount);
         emit FundsTransferredToMediator(mediator, _data, _amount);
     }
 }

@@ -25,6 +25,26 @@
       "address": "0x59C899f52F2c40cBE5090bbc9A4f830B64a20Fc4",
       "txHash": "0x407c403fe468c0e844cbd7ce7db72c4c89ff5a808286bb71ada751bbd9d51677",
       "kind": "uups"
+    },
+    {
+      "address": "0x567F9A12E90A37D7d680c19B6F208309842F70bE",
+      "txHash": "0x38d5c7be33ee1214a21d07e7a9f994b7337eb186c06b82024628e13b9b1594c7",
+      "kind": "uups"
+    },
+    {
+      "address": "0x3c445CDc76e7feE6b4185826ff9790e8473c27C4",
+      "txHash": "0xefb1ce83b90b98c79adcef71bf5f6eaf567e6f58ea6274a430a9ded99f53a19a",
+      "kind": "uups"
+    },
+    {
+      "address": "0xA3e655607aEa12cddDA8dE0691a69836Db632098",
+      "txHash": "0x6449617afc312e4f86a01bf5101ce873ba6fc60057a9ac8e42948a78ed9754c2",
+      "kind": "uups"
+    },
+    {
+      "address": "0x69eca1B116cC6a2C7ac884894670b81bDFE9749B",
+      "txHash": "0x2793b2ee7c04d6ca0f384d09a7d80a6677b02852dcfbfdd9a3f07b5f65d59e18",
+      "kind": "uups"
     }
   ],
   "impls": {
@@ -1539,6 +1559,203 @@
               {
                 "label": "status",
                 "type": "t_enum(JobStatus)3928",
+                "offset": 0,
+                "slot": "0"
+              },
+              {
+                "label": "digest",
+                "type": "t_bytes32",
+                "offset": 0,
+                "slot": "1"
+              },
+              {
+                "label": "value",
+                "type": "t_uint256",
+                "offset": 0,
+                "slot": "2"
+              }
+            ],
+            "numberOfBytes": "96"
+          }
+        },
+        "namespaces": {
+          "erc7201:openzeppelin.storage.ReentrancyGuard": [
+            {
+              "contract": "ReentrancyGuardUpgradeable",
+              "label": "_status",
+              "type": "t_uint256",
+              "src": "@openzeppelin/contracts-upgradeable/utils/ReentrancyGuardUpgradeable.sol:43",
+              "offset": 0,
+              "slot": "0"
+            }
+          ],
+          "erc7201:openzeppelin.storage.Ownable2Step": [
+            {
+              "contract": "Ownable2StepUpgradeable",
+              "label": "_pendingOwner",
+              "type": "t_address",
+              "src": "@openzeppelin/contracts-upgradeable/access/Ownable2StepUpgradeable.sol:29",
+              "offset": 0,
+              "slot": "0"
+            }
+          ],
+          "erc7201:openzeppelin.storage.Ownable": [
+            {
+              "contract": "OwnableUpgradeable",
+              "label": "_owner",
+              "type": "t_address",
+              "src": "@openzeppelin/contracts-upgradeable/access/OwnableUpgradeable.sol:24",
+              "offset": 0,
+              "slot": "0"
+            }
+          ],
+          "erc7201:openzeppelin.storage.Initializable": [
+            {
+              "contract": "Initializable",
+              "label": "_initialized",
+              "type": "t_uint64",
+              "src": "@openzeppelin/contracts-upgradeable/proxy/utils/Initializable.sol:69",
+              "offset": 0,
+              "slot": "0"
+            },
+            {
+              "contract": "Initializable",
+              "label": "_initializing",
+              "type": "t_bool",
+              "src": "@openzeppelin/contracts-upgradeable/proxy/utils/Initializable.sol:73",
+              "offset": 8,
+              "slot": "0"
+            }
+          ]
+        }
+      }
+    },
+    "622279fc171371dc22de125bb9a83d6691ff7f2f55fc66e7d4f52cda4735a724": {
+      "address": "0x4eDE108B71f6CB27D38B61D01A553aEc1Ac51e12",
+      "txHash": "0xd27bc854c308952359567567a64ffd047b65006569de137de1b5e0c9bfc53aea",
+      "layout": {
+        "solcVersion": "0.8.24",
+        "storage": [
+          {
+            "label": "mediator",
+            "offset": 0,
+            "slot": "0",
+            "type": "t_address",
+            "contract": "Dealer",
+            "src": "src/L2Contracts/Dealer.sol:15"
+          },
+          {
+            "label": "jobDetails",
+            "offset": 0,
+            "slot": "1",
+            "type": "t_mapping(t_address,t_struct(Job)3893_storage)",
+            "contract": "Dealer",
+            "src": "src/L2Contracts/Dealer.sol:16"
+          },
+          {
+            "label": "nonce",
+            "offset": 0,
+            "slot": "2",
+            "type": "t_uint256",
+            "contract": "Dealer",
+            "src": "src/L2Contracts/Dealer.sol:18"
+          }
+        ],
+        "types": {
+          "t_address": {
+            "label": "address",
+            "numberOfBytes": "20"
+          },
+          "t_bool": {
+            "label": "bool",
+            "numberOfBytes": "1"
+          },
+          "t_struct(InitializableStorage)128_storage": {
+            "label": "struct Initializable.InitializableStorage",
+            "members": [
+              {
+                "label": "_initialized",
+                "type": "t_uint64",
+                "offset": 0,
+                "slot": "0"
+              },
+              {
+                "label": "_initializing",
+                "type": "t_bool",
+                "offset": 8,
+                "slot": "0"
+              }
+            ],
+            "numberOfBytes": "32"
+          },
+          "t_struct(Ownable2StepStorage)13_storage": {
+            "label": "struct Ownable2StepUpgradeable.Ownable2StepStorage",
+            "members": [
+              {
+                "label": "_pendingOwner",
+                "type": "t_address",
+                "offset": 0,
+                "slot": "0"
+              }
+            ],
+            "numberOfBytes": "32"
+          },
+          "t_struct(OwnableStorage)68_storage": {
+            "label": "struct OwnableUpgradeable.OwnableStorage",
+            "members": [
+              {
+                "label": "_owner",
+                "type": "t_address",
+                "offset": 0,
+                "slot": "0"
+              }
+            ],
+            "numberOfBytes": "32"
+          },
+          "t_struct(ReentrancyGuardStorage)281_storage": {
+            "label": "struct ReentrancyGuardUpgradeable.ReentrancyGuardStorage",
+            "members": [
+              {
+                "label": "_status",
+                "type": "t_uint256",
+                "offset": 0,
+                "slot": "0"
+              }
+            ],
+            "numberOfBytes": "32"
+          },
+          "t_uint256": {
+            "label": "uint256",
+            "numberOfBytes": "32"
+          },
+          "t_uint64": {
+            "label": "uint64",
+            "numberOfBytes": "8"
+          },
+          "t_bytes32": {
+            "label": "bytes32",
+            "numberOfBytes": "32"
+          },
+          "t_enum(JobStatus)3885": {
+            "label": "enum IDealer.JobStatus",
+            "members": [
+              "None",
+              "Pending",
+              "Done",
+              "Cancelled"
+            ],
+            "numberOfBytes": "1"
+          },
+          "t_mapping(t_address,t_struct(Job)3893_storage)": {
+            "label": "mapping(address => struct IDealer.Job)",
+            "numberOfBytes": "32"
+          },
+          "t_struct(Job)3893_storage": {
+            "label": "struct IDealer.Job",
+            "members": [
+              {
+                "label": "status",
+                "type": "t_enum(JobStatus)3885",
                 "offset": 0,
                 "slot": "0"
               },

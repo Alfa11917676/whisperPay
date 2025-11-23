@@ -16,22 +16,20 @@ contract Dealer is UUPSUpgradeable, Ownable, ReentrancyGuard, IDealer {
     mapping (address => Job) private jobDetails;
 
     uint256 private nonce;
-    IERC20 public stableCoin;
 
     //---------------------------------  Initializer  ----------------------------------------//
     /// @notice Initializes the contract.
-    function initialize(address _mediator, address _stableCoin) external initializer onlyProxy {
+    function initialize(address _mediator) external initializer onlyProxy {
 
         __UUPSUpgradeable_init();
         __Ownable2Step_init();
         __Ownable_init(msg.sender);
         __ReentrancyGuard_init();
 
-        if (_mediator == address(0x0) || _stableCoin == address(0x0))
+        if (_mediator == address(0x0))
             revert InvalidInteraction("Zero address cannot be passed");
 
         mediator = _mediator;
-        stableCoin = IERC20(_stableCoin);
         nonce++;
     }
 
@@ -73,7 +71,6 @@ contract Dealer is UUPSUpgradeable, Ownable, ReentrancyGuard, IDealer {
         Job memory job = jobDetails[_jobCreator];
         if (job.status == JobStatus.Done || job.status == JobStatus.Cancelled)
             revert InvalidInteraction("No latest interaction required");
-//        stableCoin.safeTransfer(mediator, job.value);
         payable(mediator).transfer(job.value);
 
         emit FundsTransferredToMediator(job.value);

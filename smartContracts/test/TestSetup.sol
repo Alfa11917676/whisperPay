@@ -29,15 +29,13 @@ contract TestSetup is Test {
         proxy.setType("uups");
         Dealer implementation = new Dealer();
         bytes memory data = abi.encodeWithSignature(
-            "initialize(address,address)",
-            admin,
-            bob
+            "initialize(address)",
+            admin
         );
 
         bytes memory wrongData = abi.encodeWithSignature(
-            "initialize(address,address)",
-            address(0),
-            bob
+            "initialize(address)",
+            address(0)
         );
 
         vm.startPrank(admin);

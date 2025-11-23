@@ -11,11 +11,9 @@ contract BurnerWallet is IBurnerWallet, Ownable2Step, ReentrancyGuard{
     address public mediator;
 
     string public backendDigest;
-    IERC20 public stableCoin;
 
-    constructor(string memory _backendDigest, address _tokenAddress) Ownable(msg.sender){
+    constructor(string memory _backendDigest) Ownable(msg.sender){
         backendDigest = _backendDigest;
-        stableCoin = IERC20(_tokenAddress);
     }
 
     function executeBurnerTransaction (address[] memory _receivers, uint256[] memory _amounts) external nonReentrant onlyOwner{
