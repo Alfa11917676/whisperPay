@@ -1,10 +1,11 @@
 "use client";
 
-import { useMemo } from "react";
+import { useMemo, useCallback } from "react";
 import { useAppKitProvider, useAppKitAccount } from "@reown/appkit/react";
 import { BrowserProvider, parseEther } from "ethers-v6";
 import {
 	getContract,
+	getReadOnlyContract,
 	DEALER_CONTRACT_ADDRESS,
 	type Address,
 } from "@/lib/contractUtils";
@@ -106,31 +107,32 @@ export const useContract = () => {
 	 * @param creatorAddress - Address of the job creator
 	 * @returns Job details
 	 */
-	const getJobDetails = async (creatorAddress: string) => {
-		if (!ethersProvider) {
-			throw new Error("Wallet provider not available");
-		}
-
-		try {
-			// Get contract instance (pass wallet address if available)
-			const contract = await getContract(
-				"Dealer",
-				ethersProvider,
-				undefined,
-				walletAddress as Address | undefined
-			);
-
-			if (!contract) {
-				throw new Error("Failed to initialize contract");
+	const getJobDetails = useCallback(
+		async (creatorAddress: string) => {
+			if (!ethersProvider) {
+				throw new Error("Wallet provider not available");
 			}
 
-			const jobDetails = await contract.getJobDetails(creatorAddress);
-			return jobDetails;
-		} catch (error) {
-			console.error("Error getting job details:", error);
-			throw error;
-		}
-	};
+			try {
+				// Get read-only contract instance (no signer needed for reading)
+				const contract = await getReadOnlyContract(
+					"Dealer",
+					ethersProvider
+				);
+
+				if (!contract) {
+					throw new Error("Failed to initialize contract");
+				}
+
+				const jobDetails = await contract.getJobDetails(creatorAddress);
+				return jobDetails;
+			} catch (error) {
+				console.error("Error getting job details:", error);
+				throw error;
+			}
+		},
+		[ethersProvider]
+	);
 
 	return {
 		depositAndExec,

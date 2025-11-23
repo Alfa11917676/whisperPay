@@ -51,12 +51,6 @@ export const getContract = async (
 		const address =
 			contractAddress || CONTRACT_CONFIG[contractName]!.address;
 
-		console.log("Creating contract with:", {
-			contractName,
-			address,
-			abiLength: Array.isArray(abi) ? abi.length : 0,
-		});
-
 		// For BrowserProvider (wallet transactions), create signer manually
 		// For JsonRpcProvider (read-only), use provider directly
 		let signerOrProvider;
@@ -82,5 +76,35 @@ export const getContract = async (
 	} catch (e) {
 		console.error("Error in getContract:", e);
 		throw e;
+	}
+};
+
+/**
+ * Get a read-only contract instance (no signing capabilities)
+ * @param contractName - Name of the contract to instantiate
+ * @param provider - Ethers provider (JsonRpcProvider or BrowserProvider)
+ * @param contractAddress - Optional custom contract address
+ * @returns Contract instance or undefined if provider is not available
+ */
+export const getReadOnlyContract = async (
+	contractName: ContractType,
+	provider: JsonRpcProvider | BrowserProvider | undefined,
+	contractAddress?: AppKitAddress
+): Promise<Contract | undefined> => {
+	if (!provider) return;
+
+	try {
+		const abiModule = await CONTRACT_CONFIG[contractName]!.abi();
+		// Handle both default export and direct export
+		const abi = abiModule.default || abiModule;
+		const address =
+			contractAddress || CONTRACT_CONFIG[contractName]!.address;
+
+		// Use provider directly for read-only operations
+		const contract = new Contract(address, abi, provider);
+		return contract;
+	} catch (e) {
+		console.error("Error in getReadOnlyContract:", e);
+		return undefined;
 	}
 };

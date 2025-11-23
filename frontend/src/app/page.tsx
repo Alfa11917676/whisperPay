@@ -4,6 +4,7 @@ import { WalletConnect } from "@/components/WalletConnect";
 import { Hero } from "@/components/Hero";
 import { PrivacyFlow } from "@/components/PrivacyFlow";
 import { PaymentForm } from "@/components/PaymentForm";
+import { TransactionStatus } from "@/components/TransactionStatus";
 import { motion } from "framer-motion";
 import Image from "next/image";
 
@@ -38,6 +39,7 @@ const Index = () => {
 				<Hero />
 				<PrivacyFlow />
 				<PaymentForm />
+				<TransactionStatus />
 			</main>
 
 			{/* Footer */}

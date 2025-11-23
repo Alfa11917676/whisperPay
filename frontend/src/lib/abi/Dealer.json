@@ -183,6 +183,19 @@
 		"anonymous": false,
 		"inputs": [
 			{
+				"indexed": false,
+				"internalType": "bytes32",
+				"name": "_jobId",
+				"type": "bytes32"
+			}
+		],
+		"name": "L3JobCompleted",
+		"type": "event"
+	},
+	{
+		"anonymous": false,
+		"inputs": [
+			{
 				"indexed": true,
 				"internalType": "address",
 				"name": "previousOwner",
@@ -286,9 +299,9 @@
 			{
 				"components": [
 					{
-						"internalType": "bool",
+						"internalType": "enum IDealer.JobStatus",
 						"name": "status",
-						"type": "bool"
+						"type": "uint8"
 					},
 					{
 						"internalType": "bytes32",
@@ -364,6 +377,19 @@
 			}
 		],
 		"stateMutability": "view",
+		"type": "function"
+	},
+	{
+		"inputs": [
+			{
+				"internalType": "address",
+				"name": "_jobCreator",
+				"type": "address"
+			}
+		],
+		"name": "postOpsUpdate",
+		"outputs": [],
+		"stateMutability": "nonpayable",
 		"type": "function"
 	},
 	{
