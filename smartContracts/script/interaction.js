@@ -10,12 +10,20 @@ async function deployment() {
     console.log("admin & networkName", admin.address, network.name)
 
     const Dealer = await ethers.getContractFactory("Dealer")
-    let dealer = await upgrades.upgradeProxy(
-        "0x59C899f52F2c40cBE5090bbc9A4f830B64a20Fc4",
-        Dealer,
-    );
-    await dealer.waitForDeployment();
-    debug("Deployment successfully deployed", dealer.target)
+
+    const dealer = await Dealer.attach("0x59C899f52F2c40cBE5090bbc9A4f830B64a20Fc4");
+
+    let tx = await dealer.depositAndExec(
+        "this is the dealer",
+        1234,
+        ethers.parseEther("0.001"),
+        {
+            value: ethers.parseEther("0.001")
+        }
+    )
+    await tx.wait()
+    console.log("Tx done");
+
 
 }
 

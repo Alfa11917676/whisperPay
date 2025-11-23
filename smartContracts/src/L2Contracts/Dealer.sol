@@ -27,6 +27,9 @@ contract Dealer is UUPSUpgradeable, Ownable, ReentrancyGuard, IDealer {
         __Ownable_init(msg.sender);
         __ReentrancyGuard_init();
 
+        if (_mediator == address(0x0) || _stableCoin == address(0x0))
+            revert InvalidInteraction("Zero address cannot be passed");
+
         mediator = _mediator;
         stableCoin = IERC20(_stableCoin);
         nonce++;
@@ -49,30 +52,41 @@ contract Dealer is UUPSUpgradeable, Ownable, ReentrancyGuard, IDealer {
         if (msg.value != _totalAmount)
             revert InvalidInteraction("Funds mismatch");
 
-        bool previousJobStatus = jobDetails[msg.sender].status;
-        if (previousJobStatus == false)
+        JobStatus previousJobStatus = jobDetails[msg.sender].status;
+
+        if (previousJobStatus == JobStatus.Pending)
             revert InvalidInteraction("Previous Job Not finished");
 
         bytes32 jobDigest = keccak256(abi.encodePacked(_backendDigest, _privateChainId, _totalAmount, block.timestamp, nonce));
         jobDetails[msg.sender] = Job({
-            status: false,
+            status: JobStatus.Pending,
             digest: jobDigest,
             value: _totalAmount
         });
         nonce++;
 
-        emit L3Interaction(_backendDigest ,jobDigest, _privateChainId);
+        emit L3Interaction(_backendDigest ,jobDigest, _privateChainId, msg.sender);
     }
 
     function transferToWhisperRouter(address _jobCreator) external onlyOwner {
 
         Job memory job = jobDetails[_jobCreator];
-        if (job.status == true)
+        if (job.status == JobStatus.Done || job.status == JobStatus.Cancelled)
             revert InvalidInteraction("No latest interaction required");
 //        stableCoin.safeTransfer(mediator, job.value);
         payable(mediator).transfer(job.value);
 
         emit FundsTransferredToMediator(job.value);
+    }
+
+    function postOpsUpdate(address _jobCreator) external onlyOwner {
+
+        Job storage job = jobDetails[_jobCreator];
+        if (job.status == JobStatus.Done || job.status == JobStatus.Cancelled)
+            revert InvalidInteraction("No latest interaction required");
+
+        job.status = JobStatus.Done;
+        emit L3JobCompleted(job.digest);
     }
 
     //-------------------------------- VIEW FUNCTIONS ------------------------------------------------//

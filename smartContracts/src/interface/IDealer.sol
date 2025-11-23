@@ -3,16 +3,24 @@ pragma solidity ^0.8.10;
 
 interface IDealer {
 
-    event L3Interaction(string indexed _backendDigest, bytes32 _jobDigest, uint256 indexed _chainId);
+    event L3Interaction(string indexed _backendDigest, bytes32 _jobDigest, uint256 indexed _chainId, address _jobCreator);
     event FundsTransferredToMediator(uint256 _amount);
+    event L3JobCompleted(bytes32 _jobId);
 
     error InvalidChainId(string reason);
     error InvalidInteraction(string reason);
     error InvalidImplementation();
     error AuthenticationFailed(string reason);
 
+    enum JobStatus {
+        None,
+        Pending,
+        Done,
+        Cancelled
+    }
+
     struct Job {
-        bool status;
+        JobStatus status;
         bytes32 digest;
         uint256 value;
     }
