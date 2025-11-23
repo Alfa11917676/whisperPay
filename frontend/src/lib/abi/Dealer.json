@@ -107,17 +107,6 @@
 		"type": "error"
 	},
 	{
-		"inputs": [
-			{
-				"internalType": "address",
-				"name": "token",
-				"type": "address"
-			}
-		],
-		"name": "SafeERC20FailedOperation",
-		"type": "error"
-	},
-	{
 		"inputs": [],
 		"name": "UUPSUnauthorizedCallContext",
 		"type": "error"
@@ -179,6 +168,12 @@
 				"internalType": "uint256",
 				"name": "_chainId",
 				"type": "uint256"
+			},
+			{
+				"indexed": false,
+				"internalType": "address",
+				"name": "_jobCreator",
+				"type": "address"
 			}
 		],
 		"name": "L3Interaction",
@@ -275,7 +270,7 @@
 		],
 		"name": "depositAndExec",
 		"outputs": [],
-		"stateMutability": "nonpayable",
+		"stateMutability": "payable",
 		"type": "function"
 	},
 	{
@@ -319,6 +314,11 @@
 			{
 				"internalType": "address",
 				"name": "_mediator",
+				"type": "address"
+			},
+			{
+				"internalType": "address",
+				"name": "_stableCoin",
 				"type": "address"
 			}
 		],

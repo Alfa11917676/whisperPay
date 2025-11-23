@@ -1,13 +1,16 @@
 "use client";
 
 import { useMemo } from "react";
-import { useAppKitProvider } from "@reown/appkit/react";
-import { ethers } from "ethers";
-import DealerABI from "../lib/abi/Dealer.json";
+import { useAppKitProvider, useAppKitAccount } from "@reown/appkit/react";
+import { BrowserProvider, parseEther } from "ethers-v6";
+import {
+	getContract,
+	DEALER_CONTRACT_ADDRESS,
+	type Address,
+} from "@/lib/contractUtils";
 
-// L2 Contract Address on Arbitrum Sepolia
-export const DEALER_CONTRACT_ADDRESS =
-	"0x59C899f52F2c40cBE5090bbc9A4f830B64a20Fc4";
+// Re-export for convenience
+export { DEALER_CONTRACT_ADDRESS };
 
 export interface DepositAndExecParams {
 	backendDigest: string; // encryptedMessage
@@ -21,11 +24,17 @@ export interface DepositAndExecParams {
  */
 export const useContract = () => {
 	const { walletProvider } = useAppKitProvider("eip155");
+	const { address: walletAddress, isConnected } = useAppKitAccount();
 
 	// Create ethers provider from wallet provider
 	const ethersProvider = useMemo(() => {
 		if (!walletProvider) return null;
-		return new ethers.providers.Web3Provider(walletProvider as any);
+		try {
+			return new BrowserProvider(walletProvider as any);
+		} catch (error) {
+			console.error("Error creating ethers provider:", error);
+			return null;
+		}
 	}, [walletProvider]);
 
 	/**
@@ -38,16 +47,30 @@ export const useContract = () => {
 			throw new Error("Wallet provider not available");
 		}
 
+		if (!isConnected || !walletAddress) {
+			throw new Error("No wallet connected. Please connect your wallet.");
+		}
+
 		try {
-			const signer = ethersProvider.getSigner();
-			const contract = new ethers.Contract(
-				DEALER_CONTRACT_ADDRESS,
-				DealerABI,
-				signer
+			console.log(
+				"Getting contract instance for address:",
+				walletAddress
 			);
 
+			// Get contract instance with signer (pass wallet address for AppKit)
+			const contract = await getContract(
+				"Dealer",
+				ethersProvider,
+				undefined,
+				walletAddress as Address
+			);
+
+			if (!contract) {
+				throw new Error("Failed to initialize contract");
+			}
+
 			// Convert total amount to Wei (assuming totalAmount is in ETH)
-			const totalAmountWei = ethers.utils.parseEther(params.totalAmount);
+			const totalAmountWei = parseEther(params.totalAmount);
 
 			console.log("Calling depositAndExec with params:", {
 				backendDigest: params.backendDigest,
@@ -59,7 +82,10 @@ export const useContract = () => {
 			const tx = await contract.depositAndExec(
 				params.backendDigest,
 				params.privateChainId,
-				totalAmountWei
+				totalAmountWei,
+				{
+					value: totalAmountWei,
+				}
 			);
 
 			console.log("Transaction sent:", tx.hash);
@@ -86,11 +112,17 @@ export const useContract = () => {
 		}
 
 		try {
-			const contract = new ethers.Contract(
-				DEALER_CONTRACT_ADDRESS,
-				DealerABI,
-				ethersProvider
+			// Get contract instance (pass wallet address if available)
+			const contract = await getContract(
+				"Dealer",
+				ethersProvider,
+				undefined,
+				walletAddress as Address | undefined
 			);
+
+			if (!contract) {
+				throw new Error("Failed to initialize contract");
+			}
 
 			const jobDetails = await contract.getJobDetails(creatorAddress);
 			return jobDetails;
@@ -103,6 +135,6 @@ export const useContract = () => {
 	return {
 		depositAndExec,
 		getJobDetails,
-		isReady: !!ethersProvider,
+		isReady: !!ethersProvider && isConnected && !!walletAddress,
 	};
 };
