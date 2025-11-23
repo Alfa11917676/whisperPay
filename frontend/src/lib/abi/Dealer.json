@@ -328,11 +328,6 @@
 				"internalType": "address",
 				"name": "_mediator",
 				"type": "address"
-			},
-			{
-				"internalType": "address",
-				"name": "_stableCoin",
-				"type": "address"
 			}
 		],
 		"name": "initialize",
@@ -410,19 +405,6 @@
 		"name": "renounceOwnership",
 		"outputs": [],
 		"stateMutability": "nonpayable",
-		"type": "function"
-	},
-	{
-		"inputs": [],
-		"name": "stableCoin",
-		"outputs": [
-			{
-				"internalType": "contract IERC20",
-				"name": "",
-				"type": "address"
-			}
-		],
-		"stateMutability": "view",
 		"type": "function"
 	},
 	{

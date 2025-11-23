@@ -366,13 +366,12 @@ export const usePaymentForm = () => {
 			console.log("Encryption response:", response);
 
 			// Check if encryption was successful
-			if (
-				!response.status ||
-				!response.encryptedMessage ||
-				!response.l3ChainId
-			) {
+			if (!response.status || !response.encryptedMessage) {
 				throw new Error("Invalid encryption response");
 			}
+
+			// Use provided l3ChainId or default to "0" if not provided
+			const privateChainId = response.l3ChainId || "0";
 
 			// Move to sending phase
 			setSubmissionPhase("sending");
@@ -381,7 +380,7 @@ export const usePaymentForm = () => {
 			console.log("Calling depositAndExec on contract...");
 			const receipt = await depositAndExec({
 				backendDigest: response.encryptedMessage,
-				privateChainId: response.l3ChainId,
+				privateChainId: privateChainId,
 				totalAmount: totalAmount,
 			});
 

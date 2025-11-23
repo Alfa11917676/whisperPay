@@ -14,7 +14,7 @@ export const ZERO = BigInt(0);
 
 // L2 Contract Address on Arbitrum Sepolia
 export const DEALER_CONTRACT_ADDRESS: AppKitAddress =
-	"0x3c445CDc76e7feE6b4185826ff9790e8473c27C4";
+	"0x69eca1B116cC6a2C7ac884894670b81bDFE9749B";
 
 interface ContractConfig {
 	abi: () => Promise<any>;
