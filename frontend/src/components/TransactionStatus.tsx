@@ -1,10 +1,11 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useEffect, useState, useRef, useCallback } from "react";
 import { motion } from "framer-motion";
 import { Clock, CheckCircle2, XCircle, Loader2 } from "lucide-react";
 import { useAppKitAccount } from "@reown/appkit/react";
 import { useContract } from "@/hooks/useContract";
+import { useTransaction } from "@/contexts/TransactionContext";
 import {
 	Card,
 	CardHeader,
@@ -56,42 +57,104 @@ const statusConfig: Record<
 export const TransactionStatus = () => {
 	const { address, isConnected } = useAppKitAccount();
 	const { getJobDetails, isReady } = useContract();
+	const { setIsPending, triggerRefresh } = useTransaction();
 	const [jobDetails, setJobDetails] = useState<JobDetails | null>(null);
 	const [loading, setLoading] = useState(false);
 	const [error, setError] = useState<string | null>(null);
+	const pollingIntervalRef = useRef<NodeJS.Timeout | null>(null);
+	const fetchJobDetailsRef = useRef<(() => Promise<void>) | undefined>(
+		undefined
+	);
+	const isInitialFetchRef = useRef(true);
+
+	const fetchJobDetails = useCallback(async () => {
+		if (!isConnected || !address || !isReady) {
+			setJobDetails(null);
+			setIsPending(false);
+			return;
+		}
+
+		// Only show loading on initial fetch, not during polling
+		if (isInitialFetchRef.current) {
+			setLoading(true);
+		}
+		setError(null);
+
+		try {
+			const details = await getJobDetails(address);
+			console.log("Job details fetched:", details);
+
+			// Convert the Result array to our interface
+			const jobData: JobDetails = {
+				status: details[0],
+				digest: details[1],
+				value: details[2],
+			};
+
+			// Only set job details if there's a valid transaction
+			// (status > 0 or value > 0)
+			if (jobData.status > BigInt(0) || jobData.value > BigInt(0)) {
+				setJobDetails(jobData);
+
+				// Update pending state in context
+				const isPending = jobData.status === BigInt(1);
+				setIsPending(isPending);
+
+				// Set up polling if status is pending
+				if (isPending) {
+					if (!pollingIntervalRef.current) {
+						pollingIntervalRef.current = setInterval(() => {
+							fetchJobDetailsRef.current?.();
+						}, 5000);
+					}
+				} else {
+					// Clear polling if status is not pending
+					if (pollingIntervalRef.current) {
+						clearInterval(pollingIntervalRef.current);
+						pollingIntervalRef.current = null;
+					}
+				}
+			} else {
+				setJobDetails(null);
+				setIsPending(false);
+				// Clear polling if no transaction
+				if (pollingIntervalRef.current) {
+					clearInterval(pollingIntervalRef.current);
+					pollingIntervalRef.current = null;
+				}
+			}
+		} catch (err) {
+			console.error("Error fetching job details:", err);
+			// Don't show error for empty transactions
+			setJobDetails(null);
+			setIsPending(false);
+		} finally {
+			if (isInitialFetchRef.current) {
+				setLoading(false);
+				isInitialFetchRef.current = false;
+			}
+		}
+	}, [isConnected, address, isReady, getJobDetails, setIsPending]);
+
+	// Keep the ref updated with the latest function
+	useEffect(() => {
+		fetchJobDetailsRef.current = fetchJobDetails;
+	}, [fetchJobDetails]);
 
 	useEffect(() => {
-		const fetchJobDetails = async () => {
-			if (!isConnected || !address || !isReady) {
-				setJobDetails(null);
-				return;
-			}
-
-			setLoading(true);
-			setError(null);
-
-			try {
-				const details = await getJobDetails(address);
-				console.log("Job details fetched:", details);
-
-				// Convert the Result array to our interface
-				const jobData: JobDetails = {
-					status: details[0],
-					digest: details[1],
-					value: details[2],
-				};
-
-				setJobDetails(jobData);
-			} catch (err) {
-				console.error("Error fetching job details:", err);
-				setError("Failed to fetch transaction details");
-			} finally {
-				setLoading(false);
-			}
-		};
+		// Reset initial fetch flag when address or connection changes
+		isInitialFetchRef.current = true;
 
 		fetchJobDetails();
-	}, [address, isConnected, isReady, getJobDetails]);
+
+		// Cleanup polling on unmount
+		return () => {
+			if (pollingIntervalRef.current) {
+				clearInterval(pollingIntervalRef.current);
+				pollingIntervalRef.current = null;
+			}
+		};
+	}, [fetchJobDetails, triggerRefresh]);
 
 	if (!isConnected) {
 		return null;

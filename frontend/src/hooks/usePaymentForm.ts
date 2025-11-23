@@ -5,6 +5,7 @@ import { useAppKitAccount } from "@reown/appkit/react";
 import { encryptItems, EncryptItem } from "@/lib/apis";
 import { isValidEthereumAddress } from "@/lib/common";
 import { useContract } from "./useContract";
+import { useTransaction } from "@/contexts/TransactionContext";
 
 interface Recipient {
 	id: string;
@@ -18,6 +19,7 @@ type DistributionMode = "equal" | "custom" | "percentage";
 export const usePaymentForm = () => {
 	const { isConnected, address: walletAddress } = useAppKitAccount();
 	const { depositAndExec, isReady: isContractReady } = useContract();
+	const { refreshTransaction } = useTransaction();
 	const [totalAmount, setTotalAmount] = useState("");
 	const [recipients, setRecipients] = useState<Recipient[]>([
 		{ id: "1", address: "" },
@@ -25,6 +27,9 @@ export const usePaymentForm = () => {
 	const [mode, setMode] = useState<DistributionMode>("equal");
 	const [validationError, setValidationError] = useState("");
 	const [isSubmitting, setIsSubmitting] = useState(false);
+	const [submissionPhase, setSubmissionPhase] = useState<
+		"idle" | "securing" | "sending" | "sent"
+	>("idle");
 	const isUpdatingRef = useRef(false);
 	const prevTotalRef = useRef("");
 
@@ -336,6 +341,7 @@ export const usePaymentForm = () => {
 		}
 
 		setIsSubmitting(true);
+		setSubmissionPhase("securing");
 
 		try {
 			// Check if contract is ready
@@ -368,6 +374,9 @@ export const usePaymentForm = () => {
 				throw new Error("Invalid encryption response");
 			}
 
+			// Move to sending phase
+			setSubmissionPhase("sending");
+
 			// Call the contract function with encrypted data
 			console.log("Calling depositAndExec on contract...");
 			const receipt = await depositAndExec({
@@ -378,9 +387,16 @@ export const usePaymentForm = () => {
 
 			console.log("Transaction successful!", receipt);
 			setValidationError("");
+			setSubmissionPhase("sent");
+
+			// Trigger refresh of transaction status
+			refreshTransaction();
 
 			// Show success message or reset form
 			alert("Payment submitted successfully!");
+
+			// Reset to idle after a delay
+			setTimeout(() => setSubmissionPhase("idle"), 2000);
 		} catch (error: any) {
 			console.error("Error processing payment:", error);
 
@@ -401,6 +417,7 @@ export const usePaymentForm = () => {
 						"Failed to process payment. Please try again."
 				);
 			}
+			setSubmissionPhase("idle");
 		} finally {
 			setIsSubmitting(false);
 		}
@@ -424,6 +441,7 @@ export const usePaymentForm = () => {
 		setMode,
 		validationError,
 		isSubmitting,
+		submissionPhase,
 		distributions,
 		isValid,
 		isValidEthereumAddress,

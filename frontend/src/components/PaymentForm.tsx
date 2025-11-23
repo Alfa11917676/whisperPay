@@ -1,15 +1,26 @@
 "use client";
 
 import { motion, AnimatePresence } from "framer-motion";
-import { Plus, X, Send, AlertCircle, Wallet } from "lucide-react";
+import {
+	Plus,
+	X,
+	Send,
+	AlertCircle,
+	Wallet,
+	Shield,
+	Lock,
+	CheckCircle2,
+} from "lucide-react";
 import { Button } from "@/components/ui/Button";
 import { Input } from "@/components/ui/Input";
 import { Label } from "@/components/ui/Label";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/Tabs";
 import { Card } from "@/components/ui/Card";
 import { usePaymentForm } from "@/hooks/usePaymentForm";
+import { useTransaction } from "@/contexts/TransactionContext";
 
 export const PaymentForm = () => {
+	const { isPending, refreshTransaction } = useTransaction();
 	const {
 		// State
 		isConnected,
@@ -20,6 +31,7 @@ export const PaymentForm = () => {
 		setMode,
 		validationError,
 		isSubmitting,
+		submissionPhase,
 		distributions,
 		isValid,
 		isValidEthereumAddress,
@@ -31,6 +43,60 @@ export const PaymentForm = () => {
 		handleSend,
 	} = usePaymentForm();
 
+	// Determine button content based on phase
+	const getButtonContent = () => {
+		if (!isConnected) {
+			return (
+				<>
+					<Wallet className="w-5 h-5" />
+					Connect Wallet to Send
+				</>
+			);
+		}
+
+		if (isPending) {
+			return (
+				<>
+					<AlertCircle className="w-5 h-5 animate-pulse" />
+					Transaction Pending...
+				</>
+			);
+		}
+
+		switch (submissionPhase) {
+			case "securing":
+				return (
+					<>
+						<Shield className="w-5 h-5 animate-pulse" />
+						Securing...
+					</>
+				);
+			case "sending":
+				return (
+					<>
+						<Lock className="w-5 h-5 animate-pulse" />
+						Sending Anonymous Payment...
+					</>
+				);
+			case "sent":
+				return (
+					<>
+						<CheckCircle2 className="w-5 h-5" />
+						Sent
+					</>
+				);
+			default:
+				return (
+					<>
+						<Shield className="w-5 h-5" />
+						Secure Your Transaction
+					</>
+				);
+		}
+	};
+
+	const isFormDisabled = !isConnected || isPending;
+
 	return (
 		<div className="w-full max-w-4xl mx-auto space-y-6">
 			<Card className="glass p-8 space-y-6">
@@ -39,6 +105,15 @@ export const PaymentForm = () => {
 						<Wallet className="w-5 h-5 shrink-0" />
 						<p className="text-sm">
 							Please connect your wallet to start making payments
+						</p>
+					</div>
+				)}
+				{isPending && (
+					<div className="flex items-center gap-3 p-4 bg-yellow-500/10 border border-yellow-500/30 rounded-lg text-yellow-500">
+						<AlertCircle className="w-5 h-5 shrink-0 animate-pulse" />
+						<p className="text-sm">
+							You have a pending transaction. Please wait for it
+							to complete before submitting a new payment.
 						</p>
 					</div>
 				)}
@@ -57,12 +132,14 @@ export const PaymentForm = () => {
 						placeholder="0.00"
 						value={totalAmount}
 						onChange={(e) => setTotalAmount(e.target.value)}
-						disabled={!isConnected}
+						disabled={isFormDisabled}
 						className="text-2xl h-14 bg-secondary/50 border-border/50 focus:border-primary transition-all"
 					/>
-					{!isConnected ? (
+					{isFormDisabled ? (
 						<p className="text-xs text-muted-foreground">
-							Connect your wallet to enable payment form
+							{!isConnected
+								? "Connect your wallet to enable payment form"
+								: "Complete pending transaction to enable form"}
 						</p>
 					) : !totalAmount ? (
 						<p className="text-xs text-muted-foreground">
@@ -78,19 +155,19 @@ export const PaymentForm = () => {
 					<TabsList className="grid w-full grid-cols-3 glass">
 						<TabsTrigger
 							value="equal"
-							disabled={!isConnected || !totalAmount}
+							disabled={isFormDisabled || !totalAmount}
 						>
 							Equal
 						</TabsTrigger>
 						<TabsTrigger
 							value="custom"
-							disabled={!isConnected || !totalAmount}
+							disabled={isFormDisabled || !totalAmount}
 						>
 							Custom
 						</TabsTrigger>
 						<TabsTrigger
 							value="percentage"
-							disabled={!isConnected || !totalAmount}
+							disabled={isFormDisabled || !totalAmount}
 						>
 							Percentage
 						</TabsTrigger>
@@ -128,7 +205,7 @@ export const PaymentForm = () => {
 							variant="outline"
 							size="sm"
 							className="gap-2"
-							disabled={!isConnected || !totalAmount}
+							disabled={isFormDisabled || !totalAmount}
 						>
 							<Plus className="w-4 h-4" />
 							Add
@@ -179,7 +256,7 @@ export const PaymentForm = () => {
 														)
 													}
 													disabled={
-														!isConnected ||
+														isFormDisabled ||
 														!totalAmount
 													}
 													className={`bg-secondary/50 border-border/50 ${
@@ -227,7 +304,7 @@ export const PaymentForm = () => {
 															)
 														}
 														disabled={
-															!isConnected ||
+															isFormDisabled ||
 															!totalAmount
 														}
 														readOnly={
@@ -271,7 +348,7 @@ export const PaymentForm = () => {
 															)
 														}
 														disabled={
-															!isConnected ||
+															isFormDisabled ||
 															!totalAmount
 														}
 														readOnly={
@@ -315,7 +392,8 @@ export const PaymentForm = () => {
 												size="icon"
 												className="text-muted-foreground hover:text-destructive hover:bg-transparent absolute right-0 top-0"
 												disabled={
-													!isConnected || !totalAmount
+													isFormDisabled ||
+													!totalAmount
 												}
 											>
 												<X className="w-4 h-4" />
@@ -350,16 +428,16 @@ export const PaymentForm = () => {
 				>
 					<Button
 						onClick={handleSend}
-						disabled={!isConnected || !isValid || isSubmitting}
-						className="w-full h-14 text-lg font-display gap-3 glow-primary transition-transform active:scale-[0.98] hover:scale-[1.01] disabled:opacity-50 disabled:cursor-not-allowed"
+						disabled={
+							!isConnected ||
+							!isValid ||
+							isSubmitting ||
+							isPending
+						}
+						className="w-full h-14 text-lg font-display gap-1 glow-primary transition-transform active:scale-[0.98] hover:scale-[1.01] disabled:opacity-50 disabled:cursor-not-allowed"
 						size="lg"
 					>
-						<Send className="w-5 h-5" />
-						{isSubmitting
-							? "Processing..."
-							: !isConnected
-							? "Connect Wallet to Send"
-							: "Send Anonymous Payment"}
+						{getButtonContent()}
 					</Button>
 				</motion.div>
 			</Card>
