@@ -30,6 +30,7 @@ export const usePaymentForm = () => {
 	const [submissionPhase, setSubmissionPhase] = useState<
 		"idle" | "securing" | "sending" | "sent"
 	>("idle");
+	const [showSuccessModal, setShowSuccessModal] = useState(false);
 	const isUpdatingRef = useRef(false);
 	const prevTotalRef = useRef("");
 
@@ -391,8 +392,8 @@ export const usePaymentForm = () => {
 			// Trigger refresh of transaction status
 			refreshTransaction();
 
-			// Show success message or reset form
-			alert("Payment submitted successfully!");
+			// Show success modal
+			setShowSuccessModal(true);
 
 			// Reset to idle after a delay
 			setTimeout(() => setSubmissionPhase("idle"), 2000);
@@ -430,6 +431,10 @@ export const usePaymentForm = () => {
 		mode,
 	]);
 
+	const closeSuccessModal = useCallback(() => {
+		setShowSuccessModal(false);
+	}, []);
+
 	return {
 		// State
 		isConnected,
@@ -444,11 +449,13 @@ export const usePaymentForm = () => {
 		distributions,
 		isValid,
 		isValidEthereumAddress,
+		showSuccessModal,
 
 		// Actions
 		addRecipient,
 		removeRecipient,
 		updateRecipient,
 		handleSend,
+		closeSuccessModal,
 	};
 };

@@ -18,6 +18,7 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/Tabs";
 import { Card } from "@/components/ui/Card";
 import { usePaymentForm } from "@/hooks/usePaymentForm";
 import { useTransaction } from "@/contexts/TransactionContext";
+import { SuccessModal } from "@/components/SuccessModal";
 
 export const PaymentForm = () => {
 	const { isPending, refreshTransaction } = useTransaction();
@@ -35,12 +36,14 @@ export const PaymentForm = () => {
 		distributions,
 		isValid,
 		isValidEthereumAddress,
+		showSuccessModal,
 
 		// Actions
 		addRecipient,
 		removeRecipient,
 		updateRecipient,
 		handleSend,
+		closeSuccessModal,
 	} = usePaymentForm();
 
 	// Determine button content based on phase
@@ -441,6 +444,11 @@ export const PaymentForm = () => {
 					</Button>
 				</motion.div>
 			</Card>
+
+			<SuccessModal
+				isOpen={showSuccessModal}
+				onClose={closeSuccessModal}
+			/>
 		</div>
 	);
 };
