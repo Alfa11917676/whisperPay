@@ -1,0 +1,44 @@
+{
+  "name": "whisperPay",
+  "version": "1.0",
+  "description": "contracts for whisperPay",
+  "license": "MIT",
+  "author": "De0xys",
+  "directories": {
+    "lib": "lib",
+    "test": "test"
+  },
+  "scripts": {
+    "build": "forge build",
+    "build:force": "forge build --force",
+    "coverage": "forge coverage",
+    "deploy:mainnetL2": "DEBUG=whisperPay:* npx hardhat run script/deploy.js --network arbitrum",
+    "deploy:testnetL2": "DEBUG=whisperPay:* npx hardhat run script/deploy.js --network arbitrum_testnet",
+    "test": "forge test -vv",
+    "test:hardhat": "npx hardhat test",
+    "test:mainnet": "forge test --fork-url https://rpc.ankr.com/eth_holesky --fork-block-number 2598291 -vvv",
+    "prettier": "npx prettier --write '{test,scripts,src,tasks}/{**/*,*}.{js,sol}'"
+  },
+  "devDependencies": {
+    "@nomicfoundation/hardhat-ethers": "^3.0.0",
+    "@nomicfoundation/hardhat-verify": "^2.0.0",
+    "@openzeppelin/contracts": "^5.0.2",
+    "@openzeppelin/contracts-upgradeable": "^5.0.2",
+    "@openzeppelin/hardhat-upgrades": "^3.2.0",
+    "hardhat": "^2.22.6"
+  },
+  "dependencies": {
+    "@nomicfoundation/hardhat-ethers": "^3.0.0",
+    "@nomicfoundation/hardhat-verify": "^2.0.0",
+    "@openzeppelin/contracts-upgradeable": "^5.0.2",
+    "chai": "4.3.10",
+    "dotenv": "^16.0.1",
+    "ethers": "^6.13.1",
+    "forge-std": "^1.1.2",
+    "mocha": "^10.7.0",
+    "prettier": "2.8.8",
+    "prettier-plugin-solidity": "^1.0.0-rc.1",
+    "sort-package-json": "1.53.1",
+    "yarn": "^1.22.22"
+  }
+}
